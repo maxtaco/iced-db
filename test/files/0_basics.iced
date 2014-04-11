@@ -56,5 +56,16 @@ exports.put_get_json_1 = (T,cb) ->
   T.equal obj, val, "json object came back"
   cb()
 
+#=================================
+
+exports.put_key_get_hkey = (T,cb) ->
+  key = "k3"
+  value = 1
+  await db.put { key, value, json : true }, defer err, { hkey }
+  T.no_error err
+  await db.get { hkey }, defer err, val2
+  T.no_error err
+  T.equal value, val2, "value was right"
+  cb()
 
 #=================================

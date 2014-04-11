@@ -54,22 +54,42 @@ class DB
 
   #------------------------
 
+  _keys_to_dirs : ({key, hkey}) ->
+    if key? then @_key_to_dirs key
+    else if hkey? then @_hkey_to_dirs hkey
+    else null
+
+  #------------------------
+
   _hkey_to_dirs : (hkey) ->
     out = [] 
     for i in [0...@levels]
-      out.push hkey[i...(i+2)]
+      j = i * 2
+      out.push hkey[j...(j+2)]
     out.push hkey
     return out
 
   #------------------------
 
   _mkpath : (dirs) ->
-    p = @_path_prefix.concat(dirs)
+    top = if @_path_prefix?[0] is '' then [ path.sep ] else []
+    p = top.concat(@_path_prefix).concat(dirs)
     path.join p...
 
   #------------------------
 
   _mkpath_from_key : (key) -> @_mkpath @_key_to_dirs key
+
+  #------------------------
+
+  _mkpath_from_hkey : (hkey) -> @_mkpath @_hkey_to_dirs hkey
+
+  #------------------------
+
+  _mkpath_from_keys : ( {key, hkey} ) ->
+    if key? then @_mkpath_from_key key
+    else if hkey? then @_mkpath_from_hkey hkey
+    else null
 
   #------------------------
 
@@ -85,12 +105,13 @@ class DB
 
   #------------------------
 
-  put : ( { key, value, json }, cb) ->
-    dirs = @_key_to_dirs key
+  put : ( { hkey, key, value, json }, cb) ->
+    hkey or= @_key_to_hkey key
+    dirs = @_hkey_to_dirs hkey
     file = dirs.pop()
     esc = make_esc cb, "Db::put"
 
-    await mkdir_p_2 { root : @_path_prefix, dirs : dirs, mode : @dir_mode }, esc defer()
+    await mkdir_p_2 { @root, dirs : dirs, mode : @dir_mode }, esc defer()
 
     if (not(json?) and @json) or json
       value = JSON.stringify(value)
@@ -116,14 +137,14 @@ class DB
     opts = { encoding, mode : @file_mode }
     await fs.writeFile f, value, opts, esc defer()
 
-    cb err
+    cb err, { hkey }
 
   #------------------------
 
-  get : ( { key, json }, cb ) ->
+  get : ( { hkey, key, json }, cb ) ->
     value = null
     err = null
-    f = @_mkpath_from_key key
+    f = @_mkpath_from_keys  { key, hkey }
     await fs.readFile f, defer err, buf
     if err? 
       if err.code is 'ENOENT'
@@ -138,8 +159,8 @@ class DB
 
   #------------------------
 
-  del : ( { key }, cb ) ->
-    f = @_mkpath_from_key key
+  del : ( { key, hkey }, cb ) ->
+    f = @_mkpath_from_keys  { key, hkey }
     await fs.unlink f, defer err
     if err? and err.code is 'ENOENT'
       err = new E.NotFoundError "No data for key #{key}"
