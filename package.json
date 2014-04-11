@@ -1,0 +1,27 @@
+{
+  "name": "iced-db",
+  "version": "0.0.0",
+  "description": "Simple db",
+  "homepage": "https://github.com/maxtaco/iced-db",
+  "main": "./lib/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maxtaco/iced-db.git"
+  },
+  "directories": {
+    "lib": "lib/"
+  },
+  "devDependencies": {
+    "iced-coffee-script": "~1.7.1-b"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "dependencies": {
+    "iced-error": "0.0.8",
+    "iced-utils": "^0.1.11"
+  }
+}
