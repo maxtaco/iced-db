@@ -10,7 +10,9 @@ path = require 'path'
 #=============================================================================
 
 hash = (x) ->
-  createHash('SHA256').update(x).toString('hex')
+  h = createHash('SHA256')
+  h.update(x)
+  h.digest().toString('hex')
 
 ##=======================================================================
 
@@ -48,16 +50,26 @@ class DB
 
   #------------------------
 
-  _key_to_dirs : (key) -> @_hkey_to_dirs _key_to_hkey key
+  _key_to_dirs : (key) -> @_hkey_to_dirs @_key_to_hkey key
 
   #------------------------
 
   _hkey_to_dirs : (hkey) ->
     out = [] 
-    for i in [0...levels]
+    for i in [0...@levels]
       out.push hkey[i...(i+2)]
     out.push hkey
     return out
+
+  #------------------------
+
+  _mkpath : (dirs) ->
+    p = @_path_prefix.concat(dirs)
+    path.join p...
+
+  #------------------------
+
+  _mkpath_from_key : (key) -> @_mkpath @_key_to_dirs key
 
   #------------------------
 
@@ -100,21 +112,19 @@ class DB
 
     await athrow(err) esc defer() if err?
 
-    p = [ @_path_prefix ].concat(dirs).concat([file])
-    opts = {encoding , mode : @file_mode }
-
-    await fs.writeFile path.join(p...), value, opts, esc defer()
+    f = @_mkpath dirs.concat([file])
+    opts = { encoding, mode : @file_mode }
+    await fs.writeFile f, value, opts, esc defer()
 
     cb err
 
   #------------------------
 
   get : ( { key, json }, cb ) ->
-    dirs = @_key_to_dirs key
     value = null
     err = null
-    p = [ @_path_prefix ].concat(dirs)
-    await fs.readFile path.join(p...), defer err, buf
+    f = @_mkpath_from_key key
+    await fs.readFile f, defer err, buf
     if err? 
       if err.code is 'ENOENT'
         err = new E.NotFoundError "No data for key #{key}"
@@ -129,9 +139,8 @@ class DB
   #------------------------
 
   del : ( { key }, cb ) ->
-    dirs = @_keys_to_dirs key
-    p = [ @_path_prefix ].concat(dirs)
-    await fs.unlink path.join(p...), defer err
+    f = @_mkpath_from_key key
+    await fs.unlink f, defer err
     if err? and err.code is 'ENOENT'
       err = new E.NotFoundError "No data for key #{key}"
     cb err
