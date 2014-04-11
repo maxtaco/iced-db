@@ -38,3 +38,23 @@ exports.put_get_del_0 = (T, cb) ->
   cb()
 
 #=================================
+
+exports.put_get_json_1 = (T,cb) ->
+  obj = { foo : [1,2,3], bar : [ { biz: 1, jam : [1,2,34]}]}
+  key = "k1"
+  await db.put { key, value : obj, json : true }, defer err
+  T.no_error err
+  await db.get { key }, defer err, val
+  T.no_error err
+  T.equal obj, val, "json object came back"
+  obj.boop = true
+  k2 = "k2"
+  await db.put { key : k2, value : obj, json : true }, defer err
+  T.no_error err
+  await db.get { key : k2 }, defer err, val
+  T.no_error err
+  T.equal obj, val, "json object came back"
+  cb()
+
+
+#=================================

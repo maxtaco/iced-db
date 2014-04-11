@@ -1,7 +1,7 @@
 {createHash} = require 'crypto'
 iutils = require 'iced-utils'
 {mkdir_p,rm_r} = iutils.fs
-{a_json_parse} = iutils.util
+{athrow,a_json_parse} = iutils.util
 fs = require 'fs'
 path = require 'path'
 {make_esc} = require 'iced-error'
@@ -110,7 +110,7 @@ class DB
     else
       err = new Error "Cannot put value of type: #{typ}"
 
-    await athrow(err) esc defer() if err?
+    await athrow err, esc defer() if err?
 
     f = @_mkpath dirs.concat([file])
     opts = { encoding, mode : @file_mode }
