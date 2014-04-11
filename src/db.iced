@@ -31,7 +31,7 @@ mkdir_p_2 = ({root, dirs, mode}, cb) ->
 
 #=============================================================================
 
-class Db
+class DB
 
   #------------------------
 
@@ -68,7 +68,7 @@ class Db
   #------------------------
 
   drop : (cb) ->
-    await rm_d @root, defer err
+    await rm_r @root, defer err
     cb err
 
   #------------------------
@@ -135,6 +135,10 @@ class Db
     if err? and err.code is 'ENOENT'
       err = new E.NotFoundError "No data for key #{key}"
     cb err
+
+#=============================================================================
+
+exports.DB = DB
 
 #=============================================================================
 
