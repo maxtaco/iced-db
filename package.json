@@ -13,7 +13,8 @@
   },
   "devDependencies": {
     "minimist": "0.0.8",
-    "iced-test": "0.0.10"
+    "iced-test": "0.0.10",
+    "iced-coffee-script": "^1.7.1-c"
   },
   "licenses": [
     {
@@ -22,8 +23,8 @@
     }
   ],
   "dependencies": {
-    "iced-coffee-script": "~1.7.1-b",
     "iced-error": "0.0.8",
+    "iced-runtime": ">=0.0.1",
     "iced-utils": "^0.1.11"
   }
 }
