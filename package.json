@@ -23,8 +23,8 @@
     }
   ],
   "dependencies": {
-    "iced-error": "0.0.8",
+    "iced-error": ">=0.0.9",
     "iced-runtime": ">=0.0.1",
-    "iced-utils": "^0.1.11"
+    "iced-utils": ">=0.1.18"
   }
 }
