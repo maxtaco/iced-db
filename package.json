@@ -1,6 +1,6 @@
 {
   "name": "iced-db",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Simple db; pure JS; uses the FS as a tree",
   "homepage": "https://github.com/maxtaco/iced-db",
   "main": "./lib/main",
