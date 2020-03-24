@@ -12,7 +12,7 @@
     "lib": "lib/"
   },
   "devDependencies": {
-    "minimist": "0.0.8",
+    "minimist": "1.2.5",
     "iced-test": "0.0.10",
     "iced-coffee-script": "^1.7.1-c"
   },
